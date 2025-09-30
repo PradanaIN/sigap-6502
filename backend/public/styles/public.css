@@ -1,0 +1,118 @@
+:root {
+  color-scheme: light dark;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+body.public-body {
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+  max-width: 960px;
+  color: #0f172a;
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.public-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  color: #1e293b;
+}
+
+.public-subtitle {
+  margin-top: 0.5rem;
+  color: #475569;
+  font-size: 1.05rem;
+}
+
+.public-section {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  margin-top: 2rem;
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.1);
+}
+
+.public-section h2 {
+  margin: 0 0 1rem;
+  font-size: 1.35rem;
+  color: #312e81;
+}
+
+.public-status {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  font-weight: 600;
+}
+
+.public-status.active {
+  background: rgba(16, 185, 129, 0.18);
+  color: #047857;
+}
+
+.public-status.inactive {
+  background: rgba(248, 113, 113, 0.2);
+  color: #b91c1c;
+}
+
+.public-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.public-card {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(248, 250, 252, 0.85);
+  box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.35);
+}
+
+.public-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  color: #1e3a8a;
+}
+
+.public-next {
+  font-size: 1.1rem;
+  color: #0f172a;
+}
+
+.public-override {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+  color: #9333ea;
+}
+
+.public-footer {
+  text-align: center;
+  margin-top: 2.5rem;
+  color: #475569;
+}
+
+.public-footer a {
+  color: #4c1d95;
+  font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.public-body {
+    background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    color: #e2e8f0;
+  }
+
+  .public-section {
+    background: rgba(15, 23, 42, 0.85);
+    box-shadow: 0 20px 40px rgba(2, 6, 23, 0.65);
+  }
+
+  .public-card {
+    background: rgba(30, 41, 59, 0.85);
+  }
+
+  .public-subtitle,
+  .public-footer {
+    color: #cbd5f5;
+  }
+}

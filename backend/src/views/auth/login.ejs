@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Admin - WA Reminder</title>
+    <link rel="stylesheet" href="/styles/auth.css" />
+  </head>
+  <body class="auth-body">
+    <main class="auth-card">
+      <h1 class="auth-title">Masuk ke Dashboard Admin</h1>
+      <form method="post" action="/admin/login" class="auth-form">
+        <label class="auth-label" for="username">Username</label>
+        <input
+          id="username"
+          name="username"
+          class="auth-input"
+          placeholder="admin"
+          value="<%= values.username %>"
+          required
+        />
+
+        <label class="auth-label" for="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          class="auth-input"
+          placeholder="Masukkan password"
+          required
+        />
+
+        <% if (error) { %>
+        <div class="auth-error"><%= error %></div>
+        <% } %>
+
+        <button type="submit" class="auth-button">Masuk</button>
+      </form>
+    </main>
+  </body>
+</html>

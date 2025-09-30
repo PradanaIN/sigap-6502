@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Admin - WA Reminder</title>
+    <link rel="stylesheet" href="/styles/admin.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+  </head>
+  <body class="dashboard-body">
+    <header class="dashboard-header">
+      <div>
+        <h1>Dashboard Admin</h1>
+        <p>Halo, <%= username %>! Terakhir diperbarui: <%= generatedAt %></p>
+      </div>
+      <form method="post" action="/admin/logout">
+        <button type="submit" class="btn btn-secondary">Keluar</button>
+      </form>
+    </header>
+
+    <section class="dashboard-grid">
+      <div class="card">
+        <h2>Status Bot</h2>
+        <p class="status <%= botActive ? 'active' : 'inactive' %>">
+          <%= botActive ? 'Aktif' : 'Tidak Aktif' %>
+        </p>
+        <div class="actions">
+          <button class="btn" data-action="start">Start Bot</button>
+          <button class="btn btn-danger" data-action="stop">Stop Bot</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Pengiriman Berikutnya</h2>
+        <% if (nextRun) { %>
+        <p class="next-run">
+          <strong><%= nextRun.formatted %></strong>
+          (<%= nextRun.timezone %>)
+        </p>
+        <% if (nextRun.override) { %>
+        <p class="override">Override manual: <%= formatIsoDateId(nextRun.override.date) %> jam <%= nextRun.override.time %></p>
+        <% } %>
+        <% } else { %>
+        <p class="next-run">Belum ada jadwal aktif.</p>
+        <% } %>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Jadwal Harian</h2>
+      <table class="schedule-table">
+        <thead>
+          <tr>
+            <th>Hari</th>
+            <th>Jam</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% const dayNames = {
+               1: 'Senin',
+               2: 'Selasa',
+               3: 'Rabu',
+               4: 'Kamis',
+               5: 'Jumat',
+               6: 'Sabtu',
+               7: 'Minggu'
+             }; %>
+          <% Object.entries(schedule.dailyTimes).forEach(([day, time]) => { %>
+          <tr>
+            <td><%= dayNames[Number(day)] %></td>
+            <td><%= time || 'Tidak dijadwalkan' %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Override Manual</h2>
+      <% if (schedule.manualOverrides.length === 0) { %>
+      <p>Tidak ada override manual aktif.</p>
+      <% } else { %>
+      <ul class="override-list">
+        <% schedule.manualOverrides.forEach((item) => { %>
+        <li>
+          <strong><%= formatIsoDateId(item.date) %></strong> - <%= item.time %>
+          <% if (item.note) { %>
+          <span class="note">(<%= item.note %>)</span>
+          <% } %>
+        </li>
+        <% }) %>
+      </ul>
+      <% } %>
+    </section>
+
+    <section class="card">
+      <h2>Log Terbaru</h2>
+      <pre class="log-viewer"><%= logs.join('\n') %></pre>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script src="/scripts/admin-dashboard.js" type="module"></script>
+  </body>
+</html>

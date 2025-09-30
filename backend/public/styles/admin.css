@@ -1,0 +1,204 @@
+:root {
+  color-scheme: light dark;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+body.dashboard-body {
+  margin: 0;
+  padding: 2rem clamp(1rem, 3vw, 3rem);
+  background: radial-gradient(circle at top left, rgba(59,130,246,0.15), transparent 60%),
+    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  min-height: 100vh;
+  color: #0f172a;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  color: #1e293b;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: 0.85rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, #4c1d95, #6366f1);
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(79, 70, 229, 0.35);
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  box-shadow: 0 12px 24px rgba(239, 68, 68, 0.25);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: 0 20px 35px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(12px);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  color: #312e81;
+}
+
+.status {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 1rem 0;
+}
+
+.status.active {
+  color: #047857;
+}
+
+.status.inactive {
+  color: #b91c1c;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.next-run {
+  font-size: 1.15rem;
+  color: #0f172a;
+}
+
+.override {
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+  color: #7c3aed;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: rgba(248, 250, 252, 0.85);
+}
+
+.schedule-table th,
+.schedule-table td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.schedule-table th {
+  background: rgba(99, 102, 241, 0.12);
+  color: #312e81;
+  font-size: 0.95rem;
+}
+
+.override-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.override-list li {
+  padding: 0.85rem 1rem;
+  border-radius: 0.9rem;
+  background: rgba(30, 64, 175, 0.08);
+  color: #1e3a8a;
+}
+
+.override-list .note {
+  color: #7c3aed;
+  margin-left: 0.35rem;
+}
+
+.log-viewer {
+  max-height: 280px;
+  overflow-y: auto;
+  background: rgba(15, 23, 42, 0.85);
+  color: #e2e8f0;
+  padding: 1rem;
+  border-radius: 1rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  body.dashboard-body {
+    background: radial-gradient(circle at top left, rgba(76,29,149,0.22), transparent 65%),
+      linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    color: #e2e8f0;
+  }
+
+  .card {
+    background: rgba(15, 23, 42, 0.75);
+    box-shadow: 0 25px 50px rgba(2, 6, 23, 0.6);
+  }
+
+  .schedule-table {
+    background: rgba(30, 41, 59, 0.85);
+  }
+
+  .schedule-table th {
+    background: rgba(79, 70, 229, 0.25);
+  }
+
+  .override-list li {
+    background: rgba(79, 70, 229, 0.25);
+    color: #c7d2fe;
+  }
+}

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+  <%- include("partials/head") %>
+  <body class="bg-gray-100 text-gray-900 min-h-screen p-6">
+    <div class="max-w-3xl mx-auto bg-white shadow p-6 rounded-lg">
+      <h1 class="text-xl font-bold text-black mb-4">📋 Template Pesan</h1>
+
+      <!-- Preview -->
+      <div id="previewSection">
+        <pre
+          id="templatePreview"
+          class="bg-gray-100 p-4 rounded text-gray-800 whitespace-pre-wrap overflow-y-auto max-h-96"
+        >
+<%= template %></pre
+        >
+
+        <button
+          id="editTemplateBtn"
+          class="mt-4 bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition"
+        >
+          Edit Template
+        </button>
+      </div>
+
+      <!-- Form Edit -->
+      <div id="formSection" class="hidden">
+        <textarea
+          id="templateEditor"
+          rows="14"
+          class="w-full mt-4 p-3 border border-gray-300 rounded bg-gray-50 text-gray-800 font-mono"
+        >
+<%= template %></textarea
+        >
+
+        <div class="mt-4 flex gap-4">
+          <button
+            id="saveTemplateBtn"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Simpan
+          </button>
+          <button
+            id="cancelTemplateBtn"
+            class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500 transition"
+          >
+            Batal
+          </button>
+        </div>
+      </div>
+
+      <div id="statusMessage" class="mt-4 hidden"></div>
+    </div>
+    <%- include("partials/footer") %>
+  </body>
+</html>

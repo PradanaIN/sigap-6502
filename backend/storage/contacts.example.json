@@ -1,0 +1,20 @@
+[
+  {
+    "id": "pegawai-contoh-1",
+    "name": "Contoh Satu",
+    "number": "6285100000001",
+    "status": "masuk"
+  },
+  {
+    "id": "pegawai-contoh-2",
+    "name": "Contoh Dua",
+    "number": "6285100000002",
+    "status": "izin"
+  },
+  {
+    "id": "pegawai-contoh-3",
+    "name": "Contoh Tiga",
+    "number": "6285100000003",
+    "status": "cuti"
+  }
+]

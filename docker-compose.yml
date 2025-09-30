@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - ${BACKEND_ENV_FILE:-./backend/.env.local}
+    ports:
+      - "3301:3301"
+    volumes:
+      - ./backend/storage:/app/storage
+      - ./backend/logs:/app/logs
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: /
+    depends_on:
+      - backend
+    environment:
+      # Override via FRONTEND_BACKEND_HOST/FRONTEND_BACKEND_PORT to point at an external backend.
+      BACKEND_HOST: ${FRONTEND_BACKEND_HOST:-backend}
+      BACKEND_PORT: ${FRONTEND_BACKEND_PORT:-3301}
+    ports:
+      - "3302:80"
+    restart: unless-stopped

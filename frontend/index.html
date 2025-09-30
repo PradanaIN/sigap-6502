@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIGAP Dashboard</title>
+    <script>
+      (function setTheme(){
+        try {
+          var saved = localStorage.getItem('sigap_theme');
+          var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+          var useLight = saved ? saved === 'light' : prefersLight;
+          var root = document.documentElement;
+          root.classList.remove('theme-light','theme-dark');
+          root.classList.add(useLight ? 'theme-light' : 'theme-dark');
+        } catch(e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+
+
+

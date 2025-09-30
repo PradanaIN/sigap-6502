@@ -1,0 +1,25 @@
+{
+  "name": "wa-reminder-workspace",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Workspace for WA Reminder backend and frontend",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm --workspace backend run dev",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "build": "npm --workspace backend run build && npm --workspace frontend run build",
+    "test": "npm --workspace backend run test",
+    "lint": "npm --workspace backend run lint",
+    "check:lf": "node scripts/check-shell-eol.js",
+    "postinstall": "patch-package"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "patch-package": "^8.0.0",
+    "postinstall-postinstall": "^2.1.0"
+  }
+}

@@ -1,0 +1,5 @@
+*
+!.gitignore
+!calendar_local.json
+!contacts.example.json
+

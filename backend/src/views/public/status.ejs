@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status Sistem - WA Reminder</title>
+    <link rel="stylesheet" href="/styles/public.css" />
+  </head>
+  <body class="public-body">
+    <header class="public-header">
+      <h1>?? Status Pengingat WhatsApp</h1>
+      <p class="public-subtitle">
+        Pantau status bot dan jadwal kirim pesan secara real-time.
+      </p>
+    </header>
+
+    <section class="public-section">
+      <h2>Status Bot</h2>
+      <p class="public-status <%= botActive ? 'active' : 'inactive' %>">
+        <%= botActive ? 'Aktif' : 'Tidak Aktif' %>
+      </p>
+    </section>
+
+    <section class="public-section">
+      <h2>Jadwal Pengiriman</h2>
+      <div class="public-grid">
+        <% Object.entries(schedule.dailyTimes).forEach(([day, time]) => { %>
+        <div class="public-card">
+          <h3>Hari ke-<%= day %></h3>
+          <p><%= time ? time : 'Tidak dijadwalkan' %></p>
+        </div>
+        <% }) %>
+      </div>
+    </section>
+
+    <section class="public-section">
+      <h2>Pengiriman Berikutnya</h2>
+      <% if (nextRun) { %>
+      <p class="public-next">
+        <strong><%= nextRun.publicLabel || nextRun.formatted %></strong>
+        (<%= nextRun.timezone %>)
+        <% if (nextRun.override) { %>
+        <span class="public-override">
+          Override manual pada <%= formatIsoDateId(nextRun.override.date, { withWeekday: true }) %> jam <%= nextRun.override.time %>
+        </span>
+        <% } %>
+      </p>
+      <% } else { %>
+      <p class="public-next">Belum ada jadwal aktif.</p>
+      <% } %>
+    </section>
+
+    <footer class="public-footer">
+      <p>
+        Ingin mengelola jadwal? <a href="/admin/login">Masuk sebagai admin</a>.
+      </p>
+    </footer>
+  </body>
+</html>

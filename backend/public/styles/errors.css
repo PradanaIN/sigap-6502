@@ -1,0 +1,61 @@
+:root {
+  color-scheme: light dark;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+body.error-body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+  color: #0f172a;
+}
+
+.error-card {
+  text-align: center;
+  padding: 2.5rem 3rem;
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+}
+
+.error-card h1 {
+  margin: 0;
+  font-size: clamp(3rem, 8vw, 4.5rem);
+  color: #ef4444;
+}
+
+.error-card p {
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  color: #1e293b;
+}
+
+.error-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #4c1d95, #6366f1);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.error-body {
+    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    color: #e2e8f0;
+  }
+
+  .error-card {
+    background: rgba(15, 23, 42, 0.85);
+    box-shadow: 0 30px 60px rgba(2, 6, 23, 0.6);
+  }
+
+  .error-card p {
+    color: #cbd5f5;
+  }
+}
