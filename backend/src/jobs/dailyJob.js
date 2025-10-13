@@ -19,6 +19,9 @@ let cachedClient = null;
 let logger = console.log;
 let schedulerPrimed = false;
 
+const EARLY_TRIGGER_GRACE_MS = 15 * 1000; // tolerate slight timer jitter
+const LATE_TRIGGER_GRACE_MS = 5 * 60 * 1000; // allow short drifts before re-planning
+
 function setTimer(delay, handler) {
   if (jobTimer) {
     clearTimeout(jobTimer);
@@ -125,10 +128,86 @@ async function executeRun(nextRun) {
     return;
   }
 
-  const targetMoment = nextRun.targetMoment.clone();
+  const scheduleTimezone = nextRun?.schedule?.timezone || TIMEZONE;
+  const nowTz = moment().tz(scheduleTimezone);
+
+  let runData = nextRun;
+  try {
+    const verification = await getNextRun({
+      referenceMoment: nowTz.clone(),
+    });
+
+    if (!verification || !verification.targetMoment) {
+      logger(
+        '[Scheduler] Tidak menemukan jadwal aktif saat verifikasi eksekusi. Menjadwalkan ulang.',
+        { audience: LOG_AUDIENCES.PUBLIC }
+      );
+      await planNextRun({ reason: 'verification-missing' });
+      return;
+    }
+
+    const verifiedTargetTz = verification.targetMoment.clone().tz(scheduleTimezone);
+    const originalTargetTz = nextRun.targetMoment.clone().tz(scheduleTimezone);
+    const driftFromOriginal = verifiedTargetTz.diff(originalTargetTz);
+
+    if (Math.abs(driftFromOriginal) > EARLY_TRIGGER_GRACE_MS) {
+      const rescheduleDelay = verifiedTargetTz.diff(nowTz);
+      if (rescheduleDelay > EARLY_TRIGGER_GRACE_MS) {
+        logger(
+          `[Scheduler] Jadwal berubah saat eksekusi. Mengikuti jadwal baru ${verifiedTargetTz.format(
+            'YYYY-MM-DD HH:mm z'
+          )} (delay ${rescheduleDelay}ms).`,
+          { audience: LOG_AUDIENCES.PUBLIC }
+        );
+        setTimer(rescheduleDelay, () => executeRun(verification));
+        return;
+      }
+    }
+
+    runData = verification;
+  } catch (err) {
+    logger(
+      `[Scheduler] Gagal verifikasi jadwal saat eksekusi: ${err.message}`,
+      { audience: LOG_AUDIENCES.PUBLIC }
+    );
+  }
+
+  const targetMomentTz = runData.targetMoment.clone().tz(scheduleTimezone);
+  const diffMs = targetMomentTz.diff(nowTz);
+
+  if (diffMs > EARLY_TRIGGER_GRACE_MS) {
+    logger(
+      `[Scheduler] Pemicu terlalu awal (${diffMs}ms sebelum ${targetMomentTz.format(
+        'YYYY-MM-DD HH:mm z'
+      )}). Menjadwalkan ulang agar tepat waktu.`,
+      {
+        audience: LOG_AUDIENCES.PUBLIC,
+      }
+    );
+    setTimer(diffMs, () => executeRun(runData));
+    return;
+  }
+
+  if (diffMs < -LATE_TRIGGER_GRACE_MS) {
+    logger(
+      `[Scheduler] Job tertunda ${Math.abs(diffMs)}ms dari jadwal ${targetMomentTz.format(
+        'YYYY-MM-DD HH:mm z'
+      )}. Mencari jadwal baru.`,
+      {
+        audience: LOG_AUDIENCES.PUBLIC,
+      }
+    );
+    await planNextRun({
+      referenceMoment: nowTz.clone(),
+      reason: 'late-drift',
+    });
+    return;
+  }
+
+  const targetMoment = runData.targetMoment.clone();
 
   try {
-    if (!nextRun.override) {
+    if (!runData.override) {
       const workday = await isWorkDayHybrid(logger, targetMoment);
       if (!workday) {
         logger(
@@ -181,8 +260,8 @@ async function executeRun(nextRun) {
 
     await sendMessagesToAll(client, logger);
 
-    if (nextRun.override) {
-      await consumeManualOverride(nextRun.override.date);
+    if (runData.override) {
+      await consumeManualOverride(runData.override.date);
     }
 
     await planNextRun({

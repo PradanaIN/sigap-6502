@@ -5,9 +5,14 @@ const fssync = require('node:fs');
 const path = require('node:path');
 const moment = require('moment-timezone');
 
+const {
+  scheduler: { defaultSchedule: DEFAULT_SCHEDULE },
+} = require('../src/config/env');
+
 const STORAGE_DIR = path.resolve(__dirname, '..', 'storage');
 const CONFIG_PATH = path.join(STORAGE_DIR, 'schedule-config.json');
-const TIMEZONE = 'Asia/Makassar';
+const TIMEZONE = DEFAULT_SCHEDULE.timezone;
+const DEFAULT_SCHEDULE_VERSION = DEFAULT_SCHEDULE.defaultVersion;
 
 let originalSchedule = null;
 
@@ -53,34 +58,27 @@ function buildReference(dateString) {
 test('returns default run times for the latest schedule version', async (t) => {
   const scheduleDocument = {
     timezone: TIMEZONE,
-    dailyTimes: {
-      1: '16:00',
-      2: '16:00',
-      3: '16:00',
-      4: '16:00',
-      5: '16:30',
-      6: null,
-      7: null,
-    },
+    dailyTimes: { ...DEFAULT_SCHEDULE.dailyTimes },
     manualOverrides: [],
     paused: false,
     lastUpdatedAt: new Date('2024-05-01T00:00:00Z').toISOString(),
     updatedBy: 'system',
-    defaultVersion: '2024-05-wita',
+    defaultVersion: DEFAULT_SCHEDULE_VERSION,
   };
 
   await seedSchedule(scheduleDocument);
   const { getNextRun, getSchedule } = loadService();
 
   const weekdayCases = [
-    { label: 'Monday', date: '2024-07-01', expected: '16:00' },
-    { label: 'Tuesday', date: '2024-07-02', expected: '16:00' },
-    { label: 'Wednesday', date: '2024-07-03', expected: '16:00' },
-    { label: 'Thursday', date: '2024-07-04', expected: '16:00' },
-    { label: 'Friday', date: '2024-07-05', expected: '16:30' },
+    { label: 'Monday', date: '2024-07-01', key: '1' },
+    { label: 'Tuesday', date: '2024-07-02', key: '2' },
+    { label: 'Wednesday', date: '2024-07-03', key: '3' },
+    { label: 'Thursday', date: '2024-07-04', key: '4' },
+    { label: 'Friday', date: '2024-07-05', key: '5' },
   ];
 
-  for (const { label, date, expected } of weekdayCases) {
+  for (const { label, date, key } of weekdayCases) {
+    const expected = DEFAULT_SCHEDULE.dailyTimes[key];
     // eslint-disable-next-line no-await-in-loop
     await t.test(`maps ${label} to ${expected} WITA`, async () => {
       const referenceMoment = buildReference(date);
@@ -125,19 +123,11 @@ test('auto-upgrades legacy schedules to the latest default times', async (t) => 
   const { getNextRun, getSchedule } = loadService();
 
   const upgraded = await getSchedule();
-  assert.equal(upgraded.defaultVersion, '2024-05-wita');
-  assert.deepEqual(upgraded.dailyTimes, {
-    1: '16:00',
-    2: '16:00',
-    3: '16:00',
-    4: '16:00',
-    5: '16:30',
-    6: null,
-    7: null,
-  });
+  assert.equal(upgraded.defaultVersion, DEFAULT_SCHEDULE_VERSION);
+  assert.deepEqual(upgraded.dailyTimes, DEFAULT_SCHEDULE.dailyTimes);
 
   const persisted = await readScheduleFile();
-  assert.equal(persisted.defaultVersion, '2024-05-wita');
+  assert.equal(persisted.defaultVersion, DEFAULT_SCHEDULE_VERSION);
   assert.deepEqual(persisted.dailyTimes, upgraded.dailyTimes);
 
   const mondayRun = await getNextRun({
@@ -145,7 +135,7 @@ test('auto-upgrades legacy schedules to the latest default times', async (t) => 
   });
   assert.equal(
     mondayRun.targetMoment.clone().tz(TIMEZONE).format('HH:mm'),
-    '16:00'
+    DEFAULT_SCHEDULE.dailyTimes['1']
   );
 
   const fridayRun = await getNextRun({
@@ -153,6 +143,6 @@ test('auto-upgrades legacy schedules to the latest default times', async (t) => 
   });
   assert.equal(
     fridayRun.targetMoment.clone().tz(TIMEZONE).format('HH:mm'),
-    '16:30'
+    DEFAULT_SCHEDULE.dailyTimes['5']
   );
 });
