@@ -5,7 +5,10 @@ const config = require('../config/env');
 const loginSchema = z.object({
   username: z.string().min(3),
   password: z.string().min(1),
+  remember: z.boolean().optional(),
 });
+
+const REMEMBER_ME_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 180;
 
 async function verifyPassword(inputPassword) {
   const { passwordHash, plainPassword } = config.admin;
@@ -22,7 +25,8 @@ async function verifyPassword(inputPassword) {
   );
 }
 
-async function establishSession(req, username) {
+async function establishSession(req, username, options = {}) {
+  const remember = Boolean(options.remember);
   await new Promise((resolve, reject) => {
     console.log('[LOGIN] req.secure =', req.secure, 'XFP =', req.get('x-forwarded-proto'));
     req.session.regenerate((err) => {
@@ -34,6 +38,7 @@ async function establishSession(req, username) {
       req.session.isAdmin = true;
       req.session.username = username;
       req.session.createdAt = new Date().toISOString();
+      req.session.cookie.maxAge = remember ? REMEMBER_ME_MAX_AGE_MS : null;
 
       req.session.save((saveErr) => {
         if (saveErr) {
@@ -48,7 +53,7 @@ async function establishSession(req, username) {
 
 async function handleLogin(req, res, next) {
   try {
-    const { username, password } = loginSchema.parse(req.body);
+    const { username, password, remember } = loginSchema.parse(req.body);
     if (username !== config.admin.username) {
       return res.status(401).json({ message: 'Kredensial tidak valid.' });
     }
@@ -58,7 +63,7 @@ async function handleLogin(req, res, next) {
       return res.status(401).json({ message: 'Kredensial tidak valid.' });
     }
 
-    await establishSession(req, username);
+    await establishSession(req, username, { remember });
 
     res.set('Cache-Control', 'no-store');
     res.set('Pragma', 'no-cache');
@@ -115,7 +120,7 @@ async function renderLogin(req, res) {
 
 async function handleLoginForm(req, res) {
   try {
-    const { username, password } = loginSchema.parse(req.body);
+    const { username, password, remember } = loginSchema.parse(req.body);
     const validUser = username === config.admin.username;
     const validPassword = validUser ? await verifyPassword(password) : false;
 
@@ -127,7 +132,7 @@ async function handleLoginForm(req, res) {
       return;
     }
 
-    await establishSession(req, username);
+    await establishSession(req, username, { remember });
     res.redirect('/admin/dashboard');
   } catch (err) {
     res.render('auth/login', {

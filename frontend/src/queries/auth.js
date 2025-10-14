@@ -15,10 +15,10 @@ export function useSession() {
 export function useLogin() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ username, password }) =>
+    mutationFn: async ({ username, password, remember }) =>
       apiRequest('/api/auth/login', {
         method: 'POST',
-        body: { username, password },
+        body: { username, password, remember: Boolean(remember) },
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
